@@ -1,7 +1,7 @@
 # Tiny-ImageClassification-Tools
 
 In this project, we try to implement the CNN image classification models by using as fews lines of codes as possible. It implements the basic functions wisely used in image classification tasks such as Grad-cam, counting Parameters and FLOPs.
-The codebase have the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision. For example, the resnet50 model is trained for 90 epochs with about 9 hours based on a 8x3090 GPUs server.
+The codebase have the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision. For example, the resnet50 model is trained for 90 epochs with about 7.5 hours based on a 8x3090 GPU server.
 Besides, since the codebase is very concise and intuitive, it is very friendly to newcomers.
 
 ## main libs
@@ -59,8 +59,8 @@ python classifier_demo.py
 ```
 
 ## grad-cam image example:
-![input image](./input_image/n01682714/ILSVRC2012_val_00011551.JPEG)  
-![grad-cam image](./gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG)
+![input image](<img style="width:50%;" src="./input_image/n01682714/ILSVRC2012_val_00011551.JPEG" />)  
+![grad-cam image](<img style="width:50%;" src="./gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG" />)
 
 ## main results
 Unless otherwise specified, all models here are trained with 90 epochs.
