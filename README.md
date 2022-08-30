@@ -1,7 +1,7 @@
 # Tiny-ImageClassification-Tools
 
-In this project, we try to implement the CNN image classification models by using as fews lines of codes as possible. It implement the basic functions wisely used in image classification tasks such as Grad-cam, counting Parameters and FLOPs.
-The codebase have the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision.
+In this project, we try to implement the CNN image classification models by using as fews lines of codes as possible. It implements the basic functions wisely used in image classification tasks such as Grad-cam, counting Parameters and FLOPs.
+The codebase have the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision. For example, the resnet50 model is trained for 90 epochs with about 9 hours based on a 8x3090 GPUs server.
 Besides, since the codebase is very concise and intuitive, it is very friendly to newcomers.
 
 ## main libs
@@ -59,12 +59,18 @@ python classifier_demo.py
 ```
 
 ## grad-cam image example:
-![input image](https://github.com/yanlongbinluck/Tiny-ImageClassification-Tools/tree/main/input_image/n01682714/ILSVRC2012_val_00011551.JPEG)  
-![grad-cam image](https://github.com/yanlongbinluck/Tiny-ImageClassification-Tools/tree/main/gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG)
+![input image](./input_image/n01682714/ILSVRC2012_val_00011551.JPEG)  
+![grad-cam image](./gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG)
 
 ## main results
 Unless otherwise specified, all models here are trained with 90 epochs.
 net  | training size  | test size | top-1 acc | link
  ---- | ----- | ------  | ----- | -----
 ResNet-50  | 224 | 224 | 75.93 |
-ResNet-50 (pytorch official)  | 224 | 224 | 75.88 |
+ResNet-50  | 224 | 256 | 76.82 |
+ResNet-50 ([pytorch official](https://github.com/pytorch/examples/blob/main/imagenet/main.py))  | 224 | 224 | 75.88 |
+darknet-53  | 224 | 224 | 76.28 |
+darknet-53  | 224 | 256 | 77.11 |
+
+## acknowledgement
+This project is mainly implemented based on [pytorch official imagenet](https://github.com/pytorch/examples/blob/main/imagenet/main.py), [NVIDIA-DALI](https://github.com/NVIDIA/DALI/blob/8b8e7c6521c4de78fb6774fdf3263d6ded47a6df/docs/examples/use_cases/pytorch/resnet50/main.py), [grad-cam](https://github.com/leftthomas/GradCAM), etc. Many Thanks for these repos.
