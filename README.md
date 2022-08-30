@@ -59,8 +59,8 @@ python classifier_demo.py
 ```
 
 ## grad-cam image example:
-![input image](./input_image/n01682714/ILSVRC2012_val_00011551.JPEG=250x)
-![grad-cam image](./gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG=250x)
+![input image](./input_image/n01682714/ILSVRC2012_val_00011551.JPEG =250x)
+![grad-cam image](./gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG =250x)
 
 ## main results
 Unless otherwise specified, all models here are trained with 90 epochs.
