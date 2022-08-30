@@ -65,10 +65,10 @@ python classifier_demo.py
 Unless otherwise specified, all models here are trained with 90 epochs.
 net  | training size  | test size | top-1 acc | link
  ---- | ----- | ------  | ----- | -----
-ResNet-50  | 224 | 224 | 75.93 |
+ResNet-50  | 224 | 224 | 75.93 | [link](https://github.com/yanlongbinluck/Tiny-ImageClassification-Tools/releases/download/v1.0/resnet50_75.93.pth)
 ResNet-50  | 224 | 256 | 76.82 |
 ResNet-50 ([pytorch official](https://github.com/pytorch/examples/blob/main/imagenet/main.py))  | 224 | 224 | 75.88 |
-darknet-53  | 224 | 224 | 76.28 |
+darknet-53  | 224 | 224 | 76.28 | [link](https://github.com/yanlongbinluck/Tiny-ImageClassification-Tools/releases/download/v1.0/darknet53_76.28.pth)
 darknet-53  | 224 | 256 | 77.11 |
 
 ## acknowledgement
