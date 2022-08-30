@@ -13,7 +13,7 @@ nvidia-dali-cuda110==1.16.0
 ```
 
 ## training
-download the ImageNet dataset(about 1.28M images in total) and set the hyper-parameters
+download the ImageNet dataset(about 1.28M images in total) and set the hyper-parameters as follows:
 ```
 # ================================================================================
 #                                 All Settings
@@ -72,4 +72,4 @@ darknet-53  | 224 | 224 | 76.28 |
 darknet-53  | 224 | 256 | 77.11 |
 
 ## acknowledgement
-This project is mainly implemented based on [pytorch official imagenet](https://github.com/pytorch/examples/blob/main/imagenet/main.py), [NVIDIA-DALI](https://github.com/NVIDIA/DALI/blob/8b8e7c6521c4de78fb6774fdf3263d6ded47a6df/docs/examples/use_cases/pytorch/resnet50/main.py), [grad-cam](https://github.com/leftthomas/GradCAM), etc. Many Thanks for these repos.
+This project is mainly implemented based on [pytorch official imagenet](https://github.com/pytorch/examples/blob/main/imagenet/main.py), [NVIDIA-DALI](https://github.com/NVIDIA/DALI/blob/8b8e7c6521c4de78fb6774fdf3263d6ded47a6df/docs/examples/use_cases/pytorch/resnet50/main.py), [grad-cam](https://github.com/leftthomas/GradCAM), [thop](https://github.com/Lyken17/pytorch-OpCounter), etc. Many Thanks for these repos.
