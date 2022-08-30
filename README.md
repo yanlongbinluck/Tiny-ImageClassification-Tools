@@ -1,7 +1,7 @@
 # Tiny-ImageClassification-Tools
 
-In this project, we try to implement the CNN image classification models by using as fews lines of codes as possible. It implements the basic functions wisely used in image classification tasks such as Grad-cam, counting Parameters and FLOPs.
-The codebase have the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision. For example, the resnet50 model is trained for 90 epochs with about 7.5 hours based on a 8x3090 GPU server.
+In this project, we try to implement the CNN image classification models by using as fews lines of codes as possible (***Non sunt multiplicanda entia sine necessitate***). It implements the basic functions wisely used in image classification tasks such as Grad-cam, counting Parameters and FLOPs.
+The codebase has the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision. For example, the ResNet-50 model is trained for 90 epochs within about ***7.5*** hours based on a 8x3090 GPU server.
 Besides, since the codebase is very concise and intuitive, it is very friendly to newcomers.
 
 ## main libs
