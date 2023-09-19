@@ -18,10 +18,10 @@ from torch.cuda import amp
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from dali_utils import create_dali_pipeline
-from utils import get_regular_lr,adjust_lr_iter,save_model,write_txt,setup_seed,AverageMeter,accuracy
+from utils import get_regular_lr,adjust_lr_iter,save_model,write_txt,setup_seed,AverageMeter,accuracy,write_txt
 
 from models.darknet53 import darknet53
-from models.resnet import resnet50
+from models.resnet import resnet18,resnet34,resnet50,resnet101,resnet152
 
 try:
     from nvidia.dali.plugin.pytorch import DALIClassificationIterator, LastBatchPolicy
@@ -34,21 +34,21 @@ except Exception as e:
 # ================================================================================
 #                                 All Settings
 # ================================================================================
-world_size = 8 # How many GPUs is used to DDP
-net = "darknet53" # resnet50, darknet53...
-imagenet_data_path = "./imagenet1000"
+world_size = 1 # How many GPUs is used to DDP
+net = "resnet18" # resnet50, darknet53...
+imagenet_data_path = "/home/yanlb/dataset/imagenet_dataset" # include train and val folder, each contain 1000 subfolders
 num_classes=1000
 train_crop_size = 224 # crop size of training
 val_resize_size = 256 # resize size before crop of val
 save_dir = "./weights"
 start_epoch = 0
 end_epoch = 90
-total_batch_size = 1024 # total batchsize.
+total_batch_size = 256 # total batchsize of all GPUs.
 init_lr = total_batch_size*0.1/256 # lr
 momentum = 0.9
 weight_decay = 1e-4
 optimizer = "SGD"
-workers = 16 # per gpu workers
+workers = 4 # per gpu workers
 lr_step = [30,60] # lr*0.1 at each step
 print_interval = 50
 
@@ -77,6 +77,8 @@ def main_worker(rank,world_size):
     global start_epoch
     global current_iter
 
+    if net == "resnet18":
+        model = resnet18(pretrained=False,num_classes=num_classes).to(rank)
     if net == "resnet50":
         model = resnet50(pretrained=False,num_classes=num_classes).to(rank)
     if net == "darknet53":
@@ -177,20 +179,19 @@ def main_worker(rank,world_size):
         end_time = time.time()
         ELA_time = (end_time - start_time)
         ELA_time = time.strftime('%H:%M:%S',time.gmtime(ELA_time))
-        
       
         # eval
         top1 = validate(val_loader, model,rank)
 
         # save checkpoint
-        if  rank==0:
+        if rank == 0:
             if top1 > best_acc:
                 best_acc = top1
                 save_model(save_dir + '/model_best.pth',epoch,model,optimizer=None)
             save_model(save_dir + '/model_last.pth',epoch,model,optimizer)
-            print('Training Time/epoch: ',ELA_time,
-                  " | eval best Acc@1:%.4f "%best_acc.item(),
-                  " | eval current Acc@1:%.4f "%top1.item())
+            val_log_str = 'Training Time/epoch: ' + ELA_time + " | eval best Acc@1:%.4f "%best_acc.item() + " | eval current Acc@1:%.4f "%top1.item()
+            print(val_log_str)
+            write_txt(save_dir + '/train.log', val_log_str)
 
         if dali_loader == True:
             train_loader.reset()
@@ -240,11 +241,11 @@ def train_epoch(train_loader, model, criterion, optimizer, lr_group, epoch, rank
         top1.update(acc1[0], images.size(0))
         top5.update(acc5[0], images.size(0))
 
-        if rank==0 and i%print_interval==0:
-            print('[epoch:{},{}/{}]'.format(epoch,i,len(train_loader)),
-                  ' | lr:%.6f '%current_base_lr,
-                  ' | loss:%.6f '%loss.item(),
-                  ' | training Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'.format(top1=top1, top5=top5))
+        if rank == 0 and i % print_interval == 0:
+            train_log_str = '[epoch:{},{}/{}]'.format(epoch,i,len(train_loader)) + ' | lr:%.6f '%current_base_lr + ' | loss:%.6f '%loss.item() + \
+                        ' | training Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'.format(top1=top1, top5=top5)
+            print(train_log_str)
+            write_txt(save_dir + '/train.log',train_log_str)
 
 
 def validate(val_loader, model,rank):
