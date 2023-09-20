@@ -1,10 +1,16 @@
 # Tiny-ImageClassification-Tools
 
-In this project, we try to implement the CNN image classification models by using as fews lines of codes as possible (***Non sunt multiplicanda entia sine necessitate***). It implements the basic functions wisely used in image classification tasks such as Grad-cam, counting Parameters and FLOPs.
-The codebase has the very fast training speed by virtue of NVIDIA-DALI dataloader and automatic mixed precision. For example, the ResNet-50 model is trained for 90 epochs within about ***7.5*** hours based on a 8x3090 GPU server.
-Besides, since the codebase is very concise and intuitive, it is very friendly to newcomers.
+This project implements the basic tools wisely used in image classification tasks, including  Grad-cam, counting Parameters and FLOPs.
 
-## main libs
+## Highlights
+
+**Very fast training speed:** the ResNet-50 model is trained for 90 epochs within about ***7.5*** hours based on a 8x3090 GPU server.
+
+**Concise:** the project is implemented by using as fews lines of codes as possible and is very concise and intuitive, it is very friendly to newcomers.
+
+**Accurate:** the accuracy of the codebase can achieve the official implementation of PyTorch.
+
+## Main libs
 ```
 pytorch==1.9.1
 torchvision==0.9.1
@@ -12,7 +18,7 @@ cuda==11.1
 nvidia-dali-cuda110==1.16.0
 ```
 
-## training
+## Training
 download the ImageNet dataset(about 1.28M images in total) and set the hyper-parameters as follows:
 ```
 # ================================================================================
@@ -49,7 +55,7 @@ and then
 python train.py
 ```
 
-## evaluation, visualizing grad-cam images, counting parameters and FLOPs, etc.
+## Evaluation, visualizing grad-cam images, counting parameters and FLOPs, etc.
 set the corresponding parameters in eval.py, gradcam_demo.py, count_Params_FLOPs.py, and then:
 ```
 python eval.py
@@ -58,10 +64,10 @@ python count_Params_FLOPs.py
 python classifier_demo.py
 ```
 
-## grad-cam image example:
+## Grad-cam image example:
 <img style="width:30%;" src="./input_image/n01682714/ILSVRC2012_val_00011551.JPEG"> <img style="width:30%;" src="./gradcam_image/n01682714/ILSVRC2012_val_00011551.JPEG"> 
 
-## main results
+## Main results
 Unless otherwise specified, all models here are trained with 90 epochs.
 net  | training size  | test size | top-1 acc | link
  ---- | ----- | ------  | ----- | -----
@@ -71,5 +77,5 @@ ResNet-50  | 224 | 256 | 76.82 |
 darknet-53  | 224 | 224 | 76.28 | [link](https://github.com/yanlongbinluck/Tiny-ImageClassification-Tools/releases/download/v1.0/darknet53_76.28.pth)
 darknet-53  | 224 | 256 | 77.11 |
 
-## acknowledgement
+## Acknowledgement
 This project is mainly implemented based on [pytorch official imagenet](https://github.com/pytorch/examples/blob/main/imagenet/main.py), [NVIDIA-DALI](https://github.com/NVIDIA/DALI/blob/8b8e7c6521c4de78fb6774fdf3263d6ded47a6df/docs/examples/use_cases/pytorch/resnet50/main.py), [grad-cam](https://github.com/leftthomas/GradCAM), [thop](https://github.com/Lyken17/pytorch-OpCounter), etc. Many Thanks for these repos.
