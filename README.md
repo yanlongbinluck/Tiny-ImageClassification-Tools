@@ -4,7 +4,7 @@ This project implements the basic tools wisely used in image classification task
 
 ## Highlights
 
-**Very fast training speed:** the ResNet-50 model is trained for 90 epochs within about ***7.5*** hours based on a 8x3090 GPU server.
+**Very fast training speed:** The codebase has the very fast training speed by virtue of **NVIDIA-DALI** dataloader and automatic mixed precision. For example, the **ResNet-50** model is trained for 90 epochs within about ***7.5*** hours based on **a 8x3090 GPU server**.
 
 **Concise:** the project is implemented by using as fews lines of codes as possible and is very concise and intuitive, it is very friendly to newcomers.
 
