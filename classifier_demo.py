@@ -1,7 +1,7 @@
 
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES']='7'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 import torch
 import time
 import json
@@ -9,15 +9,24 @@ import glob
 import cv2
 import numpy as np
 from models.darknet53 import darknet53
-from models.resnet import resnet50
+from models.resnet import resnet18,resnet34,resnet50,resnet101,resnet152
 
 if __name__ == '__main__':
     
-    net = "resnet50"
+    net = "resnet18"
+    num_classes = 1000
+    if net == "resnet18":
+        model = resnet18(pretrained=False,num_classes=num_classes)
+    if net == "resnet34":
+        model = resnet34(pretrained=False,num_classes=num_classes)
     if net == "resnet50":
-        model = resnet50(pretrained=False,num_classes=1000)
+        model = resnet50(pretrained=False,num_classes=num_classes)
+    if net == "resnet101":
+        model = resnet101(pretrained=False,num_classes=num_classes)
+    if net == "resnet152":
+        model = resnet152(pretrained=False,num_classes=num_classes)
     if net == "darknet53":
-        model = darknet53(num_classes=1000)
+        model = darknet53(num_classes=num_classes)
 
     checkpoint = torch.load("./weights/resnet50_75.93.pth")
     model.load_state_dict(checkpoint)
@@ -28,7 +37,7 @@ if __name__ == '__main__':
     with open('./imagenet_class_index.json', 'r') as f:
         load_dict = json.load(f)
 
-    img_list = sorted(glob.glob('./input_image/n01682714/*.*'))
+    img_list = sorted(glob.glob('/home/yanlb/dataset/imagenet_dataset/val/n01682714/*.*'))
     
     for i in range(len(img_list)):
         inp = cv2.imread(img_list[i]) / 255. # [H,W,3]

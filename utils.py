@@ -1,6 +1,12 @@
 import torch
 import numpy as np
 import random
+import os
+
+def mkdir(path):
+    isExists = os.path.exists(path)
+    if not isExists:
+        os.makedirs(path)
 
 def get_regular_lr(optimizer):
     lr_group=[] # get  all lr for every group
@@ -35,18 +41,12 @@ def save_model(path,epoch,model,optimizer = None, save_best = False, save_to_old
         data['optimizer'] = optimizer.state_dict()
     
     if save_best == False:
-        torch.save(data,path)
+        torch.save(state_dict,path)
     else:
         if save_to_old_version == False:
             torch.save(model.state_dict(),path, _use_new_zipfile_serialization=True)
         else:
             torch.save(model.state_dict(),path, _use_new_zipfile_serialization=False) # this is for pytorch with old version, such as pytorch1.0
-
-def write_txt(dict_data, txt_file):
-    with open(txt_file,'a') as f:
-        for item in dict_data.items():
-            f.writelines(str(item[0]) + ':' + str(item[1]) + ' | ')
-        f.writelines('\n')
 
 def setup_seed(seed):
     torch.manual_seed(seed)
@@ -96,4 +96,4 @@ def accuracy(output, target, topk=(1,)):
 
 def write_txt(txt_file,str_input,write_mode = "a"):
     with open(txt_file,write_mode) as f:
-        f.writelines([str_input, '\n\r'])
+        f.writelines([str_input, '\n'])

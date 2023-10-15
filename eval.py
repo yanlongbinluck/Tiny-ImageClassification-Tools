@@ -1,13 +1,13 @@
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES']='7'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 import torch
 import time
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 
 from models.darknet53 import darknet53
-from models.resnet import resnet50
+from models.resnet import resnet18,resnet34,resnet50,resnet101,resnet152
 
 
 class AverageMeter(object):
@@ -71,7 +71,7 @@ def validate(val_loader, model):
             output = model(images)
 
             # measure accuracy and record loss
-            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+            acc1, acc5 = accuracy(output, target, topk=(1, min(num_classes,5)))
             top1.update(acc1[0], images.size(0))
             top5.update(acc5[0], images.size(0))
 
@@ -84,15 +84,25 @@ def validate(val_loader, model):
 
 if __name__ == '__main__':
 
-    valdir = os.path.join("./imagenet1000", 'val')
+    valdir = os.path.join("/home/yanlb/dataset/imagenet_dataset", 'val')
+    net = "resnet18"
+    num_classes = 1000
 
-    net = "darknet53"
+    
+    if net == "resnet18":
+        model = resnet18(pretrained=False,num_classes=num_classes)
+    if net == "resnet34":
+        model = resnet34(pretrained=False,num_classes=num_classes)
     if net == "resnet50":
-        model = resnet50(pretrained=False,num_classes=1000)
+        model = resnet50(pretrained=False,num_classes=num_classes)
+    if net == "resnet101":
+        model = resnet101(pretrained=False,num_classes=num_classes)
+    if net == "resnet152":
+        model = resnet152(pretrained=False,num_classes=num_classes)
     if net == "darknet53":
-        model = darknet53(num_classes=1000)
+        model = darknet53(num_classes=num_classes)
 
-    checkpoint = torch.load("./weights/darknet53_with_amp_dali_76.28/darknet53_model_best.pth")
+    checkpoint = torch.load("./work_dir/" + net + "/model_best.pth")
     model.load_state_dict(checkpoint)
 
 
@@ -111,4 +121,4 @@ if __name__ == '__main__':
         num_workers=16, 
         pin_memory=True)
     top1 = validate(val_loader, model)
-    print(top1)
+    print("top1 acc is: {:.2f}%".format(top1.cpu().numpy()))

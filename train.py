@@ -18,7 +18,7 @@ from torch.cuda import amp
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 from dali_utils import create_dali_pipeline
-from utils import get_regular_lr,adjust_lr_iter,save_model,write_txt,setup_seed,AverageMeter,accuracy,write_txt
+from utils import get_regular_lr,adjust_lr_iter,save_model,write_txt,setup_seed,AverageMeter,accuracy,write_txt,mkdir
 
 from models.darknet53 import darknet53
 from models.resnet import resnet18,resnet34,resnet50,resnet101,resnet152
@@ -34,13 +34,12 @@ except Exception as e:
 # ================================================================================
 #                                 All Settings
 # ================================================================================
-world_size = 1 # How many GPUs is used to DDP
+world_size = 8 # How many GPUs is used to DDP
 net = "resnet18" # resnet50, darknet53...
 imagenet_data_path = "/home/yanlb/dataset/imagenet_dataset" # include train and val folder, each contain 1000 subfolders
-num_classes=1000
+num_classes = 1000
 train_crop_size = 224 # crop size of training
 val_resize_size = 256 # resize size before crop of val
-save_dir = "./weights"
 start_epoch = 0
 end_epoch = 90
 total_batch_size = 256 # total batchsize of all GPUs.
@@ -61,6 +60,8 @@ torch.backends.cudnn.benchmark = True
 # ================================================================================
 
 
+save_dir = "./work_dir/" + net
+log_file_name = net + "-" + time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))+".log"
 
 # Data loading code
 traindir = os.path.join(imagenet_data_path, 'train')
@@ -79,8 +80,14 @@ def main_worker(rank,world_size):
 
     if net == "resnet18":
         model = resnet18(pretrained=False,num_classes=num_classes).to(rank)
+    if net == "resnet34":
+        model = resnet34(pretrained=False,num_classes=num_classes).to(rank)
     if net == "resnet50":
         model = resnet50(pretrained=False,num_classes=num_classes).to(rank)
+    if net == "resnet101":
+        model = resnet101(pretrained=False,num_classes=num_classes).to(rank)
+    if net == "resnet152":
+        model = resnet152(pretrained=False,num_classes=num_classes).to(rank)
     if net == "darknet53":
         model = darknet53(num_classes=num_classes).to(rank)
 
@@ -170,6 +177,9 @@ def main_worker(rank,world_size):
     if amp_use == True:
         scaler = amp.GradScaler(enabled=True)
 
+    if rank == 0:
+        mkdir(save_dir)
+
     for epoch in range(start_epoch,end_epoch):
         if dali_loader == False:
             train_sampler.set_epoch(epoch)
@@ -191,7 +201,7 @@ def main_worker(rank,world_size):
             save_model(save_dir + '/model_last.pth',epoch,model,optimizer)
             val_log_str = 'Training Time/epoch: ' + ELA_time + " | eval best Acc@1:%.4f "%best_acc.item() + " | eval current Acc@1:%.4f "%top1.item()
             print(val_log_str)
-            write_txt(save_dir + '/train.log', val_log_str)
+            write_txt(save_dir + "/" + log_file_name, val_log_str)
 
         if dali_loader == True:
             train_loader.reset()
@@ -236,7 +246,7 @@ def train_epoch(train_loader, model, criterion, optimizer, lr_group, epoch, rank
             optimizer.step()
 
         # measure accuracy and record loss
-        acc1, acc5 = accuracy(output, target, topk=(1, 5))
+        acc1, acc5 = accuracy(output, target, topk=(1, min(num_classes,5)))
         losses.update(loss.item(), images.size(0))
         top1.update(acc1[0], images.size(0))
         top5.update(acc5[0], images.size(0))
@@ -245,7 +255,7 @@ def train_epoch(train_loader, model, criterion, optimizer, lr_group, epoch, rank
             train_log_str = '[epoch:{},{}/{}]'.format(epoch,i,len(train_loader)) + ' | lr:%.6f '%current_base_lr + ' | loss:%.6f '%loss.item() + \
                         ' | training Acc@1 {top1.avg:.3f} Acc@5 {top5.avg:.3f}'.format(top1=top1, top5=top5)
             print(train_log_str)
-            write_txt(save_dir + '/train.log',train_log_str)
+            write_txt(save_dir + "/" + log_file_name, train_log_str)
 
 
 def validate(val_loader, model,rank):
@@ -269,7 +279,7 @@ def validate(val_loader, model,rank):
             output = model(images)
 
             # measure accuracy and record loss
-            acc1, acc5 = accuracy(output, target, topk=(1, 5))
+            acc1, acc5 = accuracy(output, target, topk=(1, min(num_classes,5)))
             acc1 = reduce_tensor(acc1,world_size) # reduce of acc of all GPUs
             acc5 = reduce_tensor(acc5,world_size)
             top1.update(acc1[0], images.size(0))
