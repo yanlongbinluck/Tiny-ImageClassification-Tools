@@ -19,7 +19,7 @@ nvidia-dali-cuda110==1.16.0
 ```
 
 ## Training
-download the ImageNet dataset(about 1.28M images in total) and set the hyper-parameters as follows:
+download the ImageNet dataset (about 1.28M images in total. use ```valprep.sh``` script to split 50000 val images to 1000 subfolders if needed.) and set the hyper-parameters as follows:
 ```
 # ================================================================================
 #                                 All Settings
@@ -27,7 +27,7 @@ download the ImageNet dataset(about 1.28M images in total) and set the hyper-par
 world_size = 8 # How many GPUs is used to DDP
 net = "darknet53" # resnet50, darknet53...
 imagenet_data_path = "./imagenet1000" # the train and val folders which has 1000 sub-folders should be in this path.
-num_classes=1000
+num_classes = 1000
 train_crop_size = 224 # crop size of training
 val_resize_size = 256 # resize size before crop of val
 save_dir = "./weights"
