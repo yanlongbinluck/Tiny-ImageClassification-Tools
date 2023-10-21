@@ -5,7 +5,7 @@ import torch
 import time
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-
+from tqdm import tqdm
 from models.darknet53 import darknet53
 from models.resnet import resnet18,resnet34,resnet50,resnet101,resnet152
 
@@ -62,8 +62,8 @@ def validate(val_loader, model):
 
     with torch.no_grad():
         end = time.time()
-        for i, (images, target) in enumerate(val_loader):
-            print(i)
+        for i, (images, target) in enumerate(tqdm(val_loader)):
+            #print(i)
             images = images.cuda()
             target = target.cuda()
 
@@ -84,8 +84,8 @@ def validate(val_loader, model):
 
 if __name__ == '__main__':
 
-    valdir = os.path.join("/home/yanlb/dataset/imagenet_dataset", 'val')
-    net = "resnet18"
+    valdir = os.path.join("/home/data/yanlb/dataset/imagenet", 'val')
+    net = "resnet50"
     num_classes = 1000
 
     
@@ -102,7 +102,7 @@ if __name__ == '__main__':
     if net == "darknet53":
         model = darknet53(num_classes=num_classes)
 
-    checkpoint = torch.load("./work_dir/" + net + "/model_best.pth")
+    checkpoint = torch.load("./work_dir/" + net + "/resnet50_75.93.pth")
     model.load_state_dict(checkpoint)
 
 

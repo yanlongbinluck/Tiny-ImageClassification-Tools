@@ -36,7 +36,7 @@ except Exception as e:
 # ================================================================================
 world_size = 8 # How many GPUs is used to DDP
 net = "resnet18" # resnet50, darknet53...
-imagenet_data_path = "/home/yanlb/dataset/imagenet_dataset" # include train and val folder, each contain 1000 subfolders
+imagenet_data_path = "/home/data/yanlb/dataset/imagenet" # include train and val folder, each contain 1000 subfolders
 num_classes = 1000
 train_crop_size = 224 # crop size of training
 val_resize_size = 256 # resize size before crop of val
@@ -53,15 +53,15 @@ print_interval = 50
 
 seed = 666 # random seed
 warmup = True # warmup for first 5 epochs 
-amp_use = True # pytorch automatic mixed precision
-dali_loader = True # nvidia DALI dataloader
+amp_use = False # pytorch automatic mixed precision
+dali_loader = False # nvidia DALI dataloader
 dali_cpu = True # whether to use cpu for DALI. For Large model, "True" is faster for training.
 torch.backends.cudnn.benchmark = True
 # ================================================================================
 
 
-save_dir = "./work_dir/" + net
-log_file_name = net + "-" + time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))+".log"
+save_dir = "./work_dir/" + net +"/"+ time.strftime('%Y-%m-%d-%H-%M-%S', time.localtime(time.time()))
+log_file_name = "train.log"
 
 # Data loading code
 traindir = os.path.join(imagenet_data_path, 'train')
@@ -176,6 +176,8 @@ def main_worker(rank,world_size):
 
     if amp_use == True:
         scaler = amp.GradScaler(enabled=True)
+    else:
+        scaler = None
 
     if rank == 0:
         mkdir(save_dir)
@@ -186,12 +188,15 @@ def main_worker(rank,world_size):
         lr_group = get_regular_lr(optimizer)
         start_time = time.time()
         train_epoch(train_loader,model,criterion,optimizer,lr_group,epoch,rank,scaler)
-        end_time = time.time()
-        ELA_time = (end_time - start_time)
-        ELA_time = time.strftime('%H:%M:%S',time.gmtime(ELA_time))
+        end_time_1 = time.time()
+        ELA_time_train = (end_time_1 - start_time)
+        ELA_time_train = time.strftime('%H:%M:%S',time.gmtime(ELA_time_train))
       
         # eval
         top1 = validate(val_loader, model,rank)
+        end_time_2 = time.time()
+        ELA_time_val = (end_time_2 - end_time_1)
+        ELA_time_val = time.strftime('%H:%M:%S',time.gmtime(ELA_time_val))
 
         # save checkpoint
         if rank == 0:
@@ -199,7 +204,7 @@ def main_worker(rank,world_size):
                 best_acc = top1
                 save_model(save_dir + '/model_best.pth',epoch,model,optimizer=None)
             save_model(save_dir + '/model_last.pth',epoch,model,optimizer)
-            val_log_str = 'Training Time/epoch: ' + ELA_time + " | eval best Acc@1:%.4f "%best_acc.item() + " | eval current Acc@1:%.4f "%top1.item()
+            val_log_str = 'training time/epoch: ' + ELA_time_train + ' | val time/epoch: ' + ELA_time_val + " | val best acc@1:%.4f "%best_acc.item() + " | val current acc@1:%.4f "%top1.item()
             print(val_log_str)
             write_txt(save_dir + "/" + log_file_name, val_log_str)
 
