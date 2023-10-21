@@ -85,10 +85,9 @@ def validate(val_loader, model):
 if __name__ == '__main__':
 
     valdir = os.path.join("/home/data/yanlb/dataset/imagenet", 'val')
-    net = "resnet50"
+    net = "resnet18"
     num_classes = 1000
 
-    
     if net == "resnet18":
         model = resnet18(pretrained=False,num_classes=num_classes)
     if net == "resnet34":
@@ -102,10 +101,8 @@ if __name__ == '__main__':
     if net == "darknet53":
         model = darknet53(num_classes=num_classes)
 
-    checkpoint = torch.load("./work_dir/" + net + "/resnet50_75.93.pth")
+    checkpoint = torch.load("./work_dir/" + net + "/model_best.pth")
     model.load_state_dict(checkpoint)
-
-
 
     model.cuda()
     val_loader = torch.utils.data.DataLoader(

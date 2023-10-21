@@ -53,8 +53,8 @@ print_interval = 50
 
 seed = 666 # random seed
 warmup = True # warmup for first 5 epochs 
-amp_use = False # pytorch automatic mixed precision
-dali_loader = False # nvidia DALI dataloader
+amp_use = True # pytorch automatic mixed precision
+dali_loader = True # nvidia DALI dataloader
 dali_cpu = True # whether to use cpu for DALI. For Large model, "True" is faster for training.
 torch.backends.cudnn.benchmark = True
 # ================================================================================
@@ -202,8 +202,8 @@ def main_worker(rank,world_size):
         if rank == 0:
             if top1 > best_acc:
                 best_acc = top1
-                save_model(save_dir + '/model_best.pth',epoch,model,optimizer=None)
-            save_model(save_dir + '/model_last.pth',epoch,model,optimizer)
+                save_model(save_dir + '/model_best.pth',epoch,model,optimizer,save_best = True)
+            save_model(save_dir + '/model_last.pth',epoch,model,optimizer,save_best = False)
             val_log_str = 'training time/epoch: ' + ELA_time_train + ' | val time/epoch: ' + ELA_time_val + " | val best acc@1:%.4f "%best_acc.item() + " | val current acc@1:%.4f "%top1.item()
             print(val_log_str)
             write_txt(save_dir + "/" + log_file_name, val_log_str)

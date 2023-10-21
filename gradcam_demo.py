@@ -1,7 +1,7 @@
 # based on: https://github.com/leftthomas/GradCAM
 
 import os
-os.environ['CUDA_VISIBLE_DEVICES']='7'
+os.environ['CUDA_VISIBLE_DEVICES']='0'
 import glob
 import json
 import cv2

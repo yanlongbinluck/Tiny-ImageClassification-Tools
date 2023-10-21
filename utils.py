@@ -28,7 +28,7 @@ def adjust_lr_iter(optimizer, epoch, lr, current_iter, len_epoch, lr_step, warmu
     for param_group in optimizer.param_groups:
         param_group['lr'] = lr
 
-def save_model(path,epoch,model,optimizer = None, save_best = False, save_to_old_version = False):
+def save_model(path,epoch,model,optimizer,save_best = False, save_to_old_version = False):
     if isinstance(model,torch.nn.DataParallel):
         state_dict = model.module.state_dict()
     elif isinstance(model,torch.nn.parallel.DistributedDataParallel):
@@ -36,17 +36,15 @@ def save_model(path,epoch,model,optimizer = None, save_best = False, save_to_old
     else:
         state_dict = model.state_dict()
 
-    data = {'epoch':epoch,'state_dict':state_dict}
-    if not (optimizer is None):
-        data['optimizer'] = optimizer.state_dict()
-    
-    if save_best == False:
+    data = {'epoch':epoch,'state_dict':state_dict,'optimizer':optimizer.state_dict()}
+
+    if save_best == True:
         torch.save(state_dict,path)
     else:
         if save_to_old_version == False:
-            torch.save(model.state_dict(),path, _use_new_zipfile_serialization=True)
+            torch.save(data,path, _use_new_zipfile_serialization=True)
         else:
-            torch.save(model.state_dict(),path, _use_new_zipfile_serialization=False) # this is for pytorch with old version, such as pytorch1.0
+            torch.save(data,path, _use_new_zipfile_serialization=False) # this is for pytorch with old version, such as pytorch1.0
 
 def setup_seed(seed):
     torch.manual_seed(seed)
